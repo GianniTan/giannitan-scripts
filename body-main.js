@@ -1,3 +1,5 @@
+console.log("Script loaded!");
+
 <script> // Don't delete, FAQ + Text scroll + Cookie + GA
 
 document.addEventListener('DOMContentLoaded', function () {
