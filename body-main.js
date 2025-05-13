@@ -1,11 +1,11 @@
+// GianniTan main script
 console.log("Script loaded!");
 
-<script> // Don't delete, FAQ + Text scroll + Cookie + GA
-
+// FAQ logica
 document.addEventListener('DOMContentLoaded', function () {
-  console.log("GianniTan script loaded!");
+  console.log("GianniTan script running...");
 
-  // FAQ section
+  // FAQ collapse
   document.querySelectorAll('[js-faq-collapse="true"]').forEach(function (element) {
     element.addEventListener('click', function () {
       if (!element.classList.contains('open')) {
@@ -18,87 +18,57 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
+
   const defaultFaq = document.querySelector('[js-faq-default="true"]');
   if (defaultFaq) {
     defaultFaq.click();
   }
+
+  // Scroll text highlight (GSAP)
+  if (window.gsap && window.SplitText && window.ScrollTrigger) {
+    gsap.registerPlugin(SplitText, ScrollTrigger);
+
+    function animate(el) {
+      if (el._split) el._split.revert();
+      el._split = new SplitText(el, { type: 'chars, words' });
+      gsap.fromTo(
+        el._split.chars,
+        { opacity: 0.2 },
+        {
+          opacity: 1,
+          stagger: 0.05,
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 90%',
+            end: 'top 20%',
+            scrub: true
+          }
+        }
+      );
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animate(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.scroll-highlight').forEach(el => {
+      io.observe(el);
+    });
+  } else {
+    console.error("GSAP, SplitText or ScrollTrigger not loaded.");
+  }
 });
 
-</script>
-
-<style> /* Don't delete, for text scroll + Splits text section 1.1 */
-  .scroll-highlight .word {
-    display: inline-block !important;
-    white-space: nowrap !important;
-  }
-  .scroll-highlight .char {
-    display: inline-block !important;
-  }
-</style>
-
-<script> // Don't delete, for text scroll + Splits text section 1.2
-(function(){
-  if (!window.gsap || !window.SplitText || !window.ScrollTrigger) {
-    console.error('GSAP/plugins niet gevonden.');
-    return;
-  }
-  gsap.registerPlugin(SplitText, ScrollTrigger);
-
-  function animate(el) {
-    if (el._split) el._split.revert();
-    el._split = new SplitText(el, { type: 'chars, words' });
-    gsap.fromTo(
-      el._split.chars,
-      { opacity: 0.2 },
-      {
-        opacity: 1,
-        stagger: 0.05,
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 90%',
-          end: 'top 20%',
-          scrub: true
-        }
-      }
-    );
-  }
-
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        animate(entry.target);
-      }
-    });
-  }, { threshold: 0.1 });
-
-  document.querySelectorAll('.scroll-highlight').forEach(el => {
-    io.observe(el);
-  });
-})();
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script> 
-
-<script> // Don't delete, cookieconsent + GA tracking
-function getCookie(name) {
-  const value = "; " + document.cookie;
-  const parts = value.split("; " + name + "=");
-  if (parts.length === 2) return parts.pop().split(";").shift();
-}
-
-function setCookie(name, value, days) {
-  const expires = new Date();
-  expires.setDate(expires.getDate() + days);
-  document.cookie = name + "=" + value + "; path=/; expires=" + expires.toUTCString();
-}
-
+// CookieConsent + Google Analytics
 window.addEventListener("load", function () {
-  // Geen banner en geen scroll lock op cookie-statement pagina
   if (window.location.pathname === "/cookie-statement") return;
 
   const banner = document.querySelector(".cookie-banner");
 
-  // Consent Mode v2 - standaard op denied
   window.dataLayer = window.dataLayer || [];
   function gtag() { dataLayer.push(arguments); }
   window.gtag = gtag;
@@ -108,12 +78,22 @@ window.addEventListener("load", function () {
     'analytics_storage': 'denied'
   });
 
-  // Scroll blokkeren op basis van bannerstatus
+  function getCookie(name) {
+    const value = "; " + document.cookie;
+    const parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
+
+  function setCookie(name, value, days) {
+    const expires = new Date();
+    expires.setDate(expires.getDate() + days);
+    document.cookie = name + "=" + value + "; path=/; expires=" + expires.toUTCString();
+  }
+
   function updateScrollLock(showing) {
     document.body.classList.toggle('no-scroll', showing);
   }
 
-  // CookieConsent init
   window.cookieconsent.initialise({
     type: "opt-in",
     guiOptions: {
@@ -175,11 +155,3 @@ window.addEventListener("load", function () {
     gtag('config', 'G-8G9HLZB826');
   }
 });
-</script>
-
-<style>
-/* No scroll when visible */
-.no-scroll {
-  overflow: hidden;
-}
-</style>
