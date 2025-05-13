@@ -1,8 +1,9 @@
-document.addEventListener("DOMContentLoaded", () => {
+<script> // Don't delete, FAQ + Text scroll + Cookie + GA
+
+document.addEventListener('DOMContentLoaded', function () {
   console.log("GianniTan script loaded!");
 
-<script> // Don't delete, for FAQ section
-document.addEventListener('DOMContentLoaded', function () {
+  // FAQ section
   document.querySelectorAll('[js-faq-collapse="true"]').forEach(function (element) {
     element.addEventListener('click', function () {
       if (!element.classList.contains('open')) {
@@ -20,9 +21,10 @@ document.addEventListener('DOMContentLoaded', function () {
     defaultFaq.click();
   }
 });
+
 </script>
 
-<style> // Don't delete, for text scroll + Splits text section 1.1
+<style> /* Don't delete, for text scroll + Splits text section 1.1 */
   .scroll-highlight .word {
     display: inline-block !important;
     white-space: nowrap !important;
@@ -33,51 +35,49 @@ document.addEventListener('DOMContentLoaded', function () {
 </style>
 
 <script> // Don't delete, for text scroll + Splits text section 1.2
-  (function(){
-    if (!window.gsap || !window.SplitText || !window.ScrollTrigger) {
-      console.error('GSAP/plugins niet gevonden.');
-      return;
-    }
-    gsap.registerPlugin(SplitText, ScrollTrigger);
+(function(){
+  if (!window.gsap || !window.SplitText || !window.ScrollTrigger) {
+    console.error('GSAP/plugins niet gevonden.');
+    return;
+  }
+  gsap.registerPlugin(SplitText, ScrollTrigger);
 
-    function animate(el) {
-      if (el._split) el._split.revert();
-      el._split = new SplitText(el, { type: 'chars, words' });
-      gsap.fromTo(
-        el._split.chars,
-        { opacity: 0.2 },
-        {
-          opacity: 1,
-          stagger: 0.05,
-          scrollTrigger: {
-            trigger: el,
-            start: 'top 90%',
-            end: 'top 20%',
-            scrub: true,
-            // once: true  ← deleted! (for one time activation)
-          }
+  function animate(el) {
+    if (el._split) el._split.revert();
+    el._split = new SplitText(el, { type: 'chars, words' });
+    gsap.fromTo(
+      el._split.chars,
+      { opacity: 0.2 },
+      {
+        opacity: 1,
+        stagger: 0.05,
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 90%',
+          end: 'top 20%',
+          scrub: true
         }
-      );
-    }
+      }
+    );
+  }
 
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          animate(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.scroll-highlight').forEach(el => {
-      io.observe(el);
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animate(entry.target);
+      }
     });
-  })();
-</script>
+  }, { threshold: 0.1 });
 
+  document.querySelectorAll('.scroll-highlight').forEach(el => {
+    io.observe(el);
+  });
+})();
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script> 
 
-<script> // Don't delete cookieconsent
+<script> // Don't delete, cookieconsent + GA tracking
 function getCookie(name) {
   const value = "; " + document.cookie;
   const parts = value.split("; " + name + "=");
@@ -165,12 +165,12 @@ window.addEventListener("load", function () {
     window.gtagLoaded = true;
 
     const gtagScript = document.createElement("script");
-    gtagScript.src = "https://www.googletagmanager.com/gtag/js?id=G-8G9HLZB826"; // <-- GA-ID
+    gtagScript.src = "https://www.googletagmanager.com/gtag/js?id=G-8G9HLZB826";
     gtagScript.async = true;
     document.head.appendChild(gtagScript);
 
     gtag('js', new Date());
-    gtag('config', 'G-8G9HLZB826'); // <-- Second GA-ID
+    gtag('config', 'G-8G9HLZB826');
   }
 });
 </script>
@@ -181,6 +181,3 @@ window.addEventListener("load", function () {
   overflow: hidden;
 }
 </style>
-
-
-});
