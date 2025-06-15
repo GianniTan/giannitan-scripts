@@ -25,9 +25,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // Scroll text highlight (GSAP)
-  if (window.gsap && window.SplitText && window.ScrollTrigger) {
-    gsap.registerPlugin(SplitText, ScrollTrigger);
+  if (window.gsap && window.ScrollTrigger) {
+  gsap.registerPlugin(ScrollTrigger);
 
+  // Alleen SplitText gebruiken als het expliciet nodig is
+  if (window.SplitText && document.querySelector(".scroll-highlight")) {
     function animate(el) {
       if (el._split) el._split.revert();
       el._split = new SplitText(el, { type: 'chars, words' });
@@ -44,6 +46,22 @@ document.addEventListener('DOMContentLoaded', function () {
             scrub: true
           }
         }
+      );
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animate(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.scroll-highlight').forEach(el => {
+      io.observe(el);
+    });
+  }
+}
       );
     }
 
