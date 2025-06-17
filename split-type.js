@@ -1,7 +1,7 @@
 let text;
 
 function runSplit() {
-  text = new SplitType('#target', { types: 'lines, words' });
+  text = new SplitType('#target', { types: 'line, words' });
 }
 
 runSplit();
