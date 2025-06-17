@@ -5,7 +5,7 @@ console.log("Script loaded!");
 document.addEventListener('DOMContentLoaded', function () {
   console.log("GianniTan script running...");
 
-  // FAQ collapse gedrag
+  // FAQ collapse
   document.querySelectorAll('[js-faq-collapse="true"]').forEach(function (element) {
     element.addEventListener('click', function () {
       if (!element.classList.contains('open')) {
@@ -19,18 +19,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Default FAQ openen
   const defaultFaq = document.querySelector('[js-faq-default="true"]');
-  if (defaultFaq) defaultFaq.click();
+  if (defaultFaq) {
+    defaultFaq.click();
+  }
 
-  // Scroll highlight animatie (GSAP SplitText)
-  if (window.gsap && window.ScrollTrigger && window.SplitText) {
-    gsap.registerPlugin(ScrollTrigger);
+  // Scroll text highlight (GSAP)
+  if (window.gsap && window.ScrollTrigger) {
+  gsap.registerPlugin(ScrollTrigger);
 
+  // Alleen SplitText gebruiken als het expliciet nodig is
+  if (window.SplitText && document.querySelector(".scroll-highlight")) {
     function animate(el) {
-      if (el._split) el._split.revert(); // Herstel vorige split
+      if (el._split) el._split.revert();
       el._split = new SplitText(el, { type: 'chars, words' });
-
       gsap.fromTo(
         el._split.chars,
         { opacity: 0.2 },
@@ -47,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
       );
     }
 
-    const observer = new IntersectionObserver((entries) => {
+    const io = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           animate(entry.target);
@@ -56,14 +58,30 @@ document.addEventListener('DOMContentLoaded', function () {
     }, { threshold: 0.1 });
 
     document.querySelectorAll('.scroll-highlight').forEach(el => {
-      observer.observe(el);
+      io.observe(el);
+    });
+  }
+}
+      );
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animate(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.scroll-highlight').forEach(el => {
+      io.observe(el);
     });
   } else {
-    console.error("GSAP, ScrollTrigger of SplitText is niet geladen.");
+    console.error("GSAP, SplitText or ScrollTrigger not loaded.");
   }
 });
 
-// CookieConsent + Google Analytics (AVG-compliant)
+// CookieConsent + Google Analytics
 window.addEventListener("load", function () {
   if (window.location.pathname === "/cookie-statement") return;
 
