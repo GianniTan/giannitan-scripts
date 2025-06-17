@@ -9,7 +9,7 @@ function runSplit() {
 
 runSplit();
 
-window.addEvenListener('resize', function() {
+window.addEventListener('resize', function() {
   text.revert();
   runSplit();
 });
