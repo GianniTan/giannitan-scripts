@@ -2,7 +2,7 @@ let text;
 
 function runSplit() {
   let currentElement = $(".split-lines");
-  text = new SplitType(currentElement, { types: 'lines, words' });
+  text = new SplitType(currentElement, { types: 'lines' });
 }
 
 runSplit();
