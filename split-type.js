@@ -1,4 +1,4 @@
-const text;
+let text;
 
 function runSplit() {
   text = new SplitType('#target', { types: 'lines, words' });
