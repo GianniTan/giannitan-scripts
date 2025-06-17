@@ -1,55 +1,68 @@
-// split-type-new.js
 ;(function(){
   'use strict';
   gsap.registerPlugin(ScrollTrigger);
 
-  let text;
+  let splitInstances = [];
 
-  function initSplitAndAnimation() {
-    // 1) kill alle oude ScrollTriggers
+  function destroySplits() {
+    splitInstances.forEach(instance => instance.revert());
+    splitInstances = [];
     ScrollTrigger.getAll().forEach(t => t.kill());
-    // 2) revert oude SplitType
-    if (text) text.revert();
-    // 3) nieuwe split
-    const el = document.querySelector('.split-lines');
-    if (!el) return;
-    text = new SplitType(el, { types: 'lines, words' });
-    // 4) masks en animaties
-    el.querySelectorAll('.line').forEach(line => {
-      let mask = line.querySelector('.line-mask');
-      if (!mask) {
-        mask = document.createElement('div');
-        mask.className = 'line-mask';
-        line.appendChild(mask);
-      }
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: line,
-          start: 'top center',
-          end: 'bottom center',
-          scrub: 1
-        }
-      }).to(mask, { width: '0%', duration: 1 });
-    });
-    // 5) recalc alles
-    ScrollTrigger.refresh();
   }
 
-  // 1e run zodra DOM + fonts klaar zijn
-  const domReady = new Promise(res => {
-    document.readyState !== 'loading' ? res()
-      : document.addEventListener('DOMContentLoaded', res);
-  });
-  const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
-  domReady.then(() => fontsReady.then(initSplitAndAnimation));
+  function initSplits() {
+    const elements = document.querySelectorAll('.split-lines');
+    if (!elements.length) return;
 
-  // 2e run écht ná álle assets (images, CSS, extern)
-  window.addEventListener('load', initSplitAndAnimation);
+    elements.forEach(el => {
+      const split = new SplitType(el, {
+        types: 'lines, words',
+        whitespace: true
+      });
+      splitInstances.push(split);
 
-  // bij resize opnieuw (optioneel met debounce)
-  let _deb;
+      el.querySelectorAll('.line').forEach(line => {
+        let mask = line.querySelector('.line-mask');
+        if (!mask) {
+          mask = document.createElement('div');
+          mask.className = 'line-mask';
+          line.appendChild(mask);
+        }
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: line,
+            start: 'top 80%',
+            end: 'bottom 50%',
+            scrub: 1
+          }
+        }).to(mask, { width: '0%', duration: 1 });
+      });
+    });
+
+    ScrollTrigger.refresh(true);
+  }
+
+  function initWhenReady() {
+    Promise.all([
+      new Promise(res => {
+        if (document.readyState !== 'loading') res();
+        else document.addEventListener('DOMContentLoaded', res);
+      }),
+      document.fonts ? document.fonts.ready : Promise.resolve()
+    ]).then(() => {
+      requestAnimationFrame(() => {
+        destroySplits();
+        initSplits();
+      });
+    });
+  }
+
+  // Run op veilige momenten
+  initWhenReady();
+  window.addEventListener('load', () => setTimeout(initWhenReady, 50)); // extra backup
+  let resizeTimeout;
   window.addEventListener('resize', () => {
-    clearTimeout(_deb);
-    _deb = setTimeout(initSplitAndAnimation, 200);
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(initWhenReady, 200);
   });
 })();
