@@ -1,6 +1,12 @@
-// Splits text into words and characters
-const text = new SplitType('#target', { types: 'lines, words, chars' })
+const text;
 
-window.addEvenListener("resize", function() {
+function runSplit() {
+  text = new SplitType('#target', { types: 'lines, words' });
+}
+
+runSplit();
+
+window.addEvenListener('resize', function() {
   text.revert();
+  runSplit();
 });
