@@ -21,8 +21,45 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Default FAQ openen
   const defaultFaq = document.querySelector('[js-faq-default="true"]');
-  if (defaultFaq) {
-    defaultFaq.click();
+  if (defaultFaq) defaultFaq.click();
+
+  // Scroll highlight animatie (GSAP SplitText)
+  if (window.gsap && window.ScrollTrigger && window.SplitText) {
+    gsap.registerPlugin(ScrollTrigger);
+
+    function animate(el) {
+      if (el._split) el._split.revert(); // Herstel vorige split
+      el._split = new SplitText(el, { type: 'chars, words' });
+
+      gsap.fromTo(
+        el._split.chars,
+        { opacity: 0.2 },
+        {
+          opacity: 1,
+          stagger: 0.05,
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 90%',
+            end: 'top 20%',
+            scrub: true
+          }
+        }
+      );
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animate(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.scroll-highlight').forEach(el => {
+      observer.observe(el);
+    });
+  } else {
+    console.error("GSAP, ScrollTrigger of SplitText is niet geladen.");
   }
 });
 
