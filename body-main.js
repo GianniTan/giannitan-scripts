@@ -5,7 +5,7 @@ console.log("Script loaded!");
 document.addEventListener('DOMContentLoaded', function () {
   console.log("GianniTan script running...");
 
-  // FAQ collapse
+  // FAQ collapse gedrag
   document.querySelectorAll('[js-faq-collapse="true"]').forEach(function (element) {
     element.addEventListener('click', function () {
       if (!element.classList.contains('open')) {
@@ -20,68 +20,10 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   const defaultFaq = document.querySelector('[js-faq-default="true"]');
-  if (defaultFaq) {
-    defaultFaq.click();
-  }
-
-  // Scroll text highlight (GSAP)
-  if (window.gsap && window.ScrollTrigger) {
-  gsap.registerPlugin(ScrollTrigger);
-
-  // Alleen SplitText gebruiken als het expliciet nodig is
-  if (window.SplitText && document.querySelector(".scroll-highlight")) {
-    function animate(el) {
-      if (el._split) el._split.revert();
-      el._split = new SplitText(el, { type: 'chars, words' });
-      gsap.fromTo(
-        el._split.chars,
-        { opacity: 0.2 },
-        {
-          opacity: 1,
-          stagger: 0.05,
-          scrollTrigger: {
-            trigger: el,
-            start: 'top 90%',
-            end: 'top 20%',
-            scrub: true
-          }
-        }
-      );
-    }
-
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          animate(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.scroll-highlight').forEach(el => {
-      io.observe(el);
-    });
-  }
-}
-      );
-    }
-
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          animate(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.scroll-highlight').forEach(el => {
-      io.observe(el);
-    });
-  } else {
-    console.error("GSAP, SplitText or ScrollTrigger not loaded.");
-  }
+  if (defaultFaq) defaultFaq.click();
 });
 
-// CookieConsent + Google Analytics
+// CookieConsent + Google Analytics (AVG-compliant)
 window.addEventListener("load", function () {
   if (window.location.pathname === "/cookie-statement") return;
 
